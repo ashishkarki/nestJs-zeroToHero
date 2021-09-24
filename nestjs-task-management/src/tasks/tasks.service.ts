@@ -1,7 +1,7 @@
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { Task, TaskStatus } from './task.model';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { v4 as uuid } from 'uuid';
 
 @Injectable()
@@ -32,7 +32,16 @@ export class TasksService {
   };
 
   getTaskById = (taskId: string) => {
-    return this.tasks.find((task) => task.id === taskId);
+    const foundTask = this.tasks.find((task) => task.id === taskId);
+
+    if (!foundTask) {
+      throw new NotFoundException(
+        null,
+        `Task with Id: '${taskId}' doesn't exist!!`,
+      );
+    }
+
+    return foundTask;
   };
 
   createTask(createTaskDto: CreateTaskDto) {
@@ -50,6 +59,9 @@ export class TasksService {
 
   deleteTaskbyId = (id: string) => {
     const taskIdx = this.tasks.findIndex((task) => task.id === id);
+
+    this.checkTaskIndexValidity(id, taskIdx);
+
     const deletedTask = this.tasks.splice(taskIdx, 1);
 
     return deletedTask[0]; // we are only deleting one item
@@ -57,6 +69,9 @@ export class TasksService {
 
   updateTaskStatusById = (id: string, newStatus: TaskStatus) => {
     const taskIdx = this.tasks.findIndex((task) => task.id === id);
+
+    this.checkTaskIndexValidity(id, taskIdx);
+
     const updatedTask: Task = {
       ...this.tasks[taskIdx],
       status: newStatus,
@@ -65,5 +80,11 @@ export class TasksService {
     this.tasks.splice(taskIdx, 1, updatedTask);
 
     return updatedTask;
+  };
+
+  checkTaskIndexValidity = (taskId: string, taskIdx: number) => {
+    if (taskIdx < 0) {
+      throw new NotFoundException(`Task with id: ${taskId} not found!!`);
+    }
   };
 }

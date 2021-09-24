@@ -1,3 +1,4 @@
+import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { TaskStatus } from './task.model';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -56,8 +57,12 @@ export class TasksController {
   @Patch('/:id/status')
   updateTaskStatusById(
     @Param('id') updatedTaskId: string,
-    @Body('status') newStatus: TaskStatus,
+    //@Body('status') newStatus: TaskStatus,
+    @Body() updateTaskStatusDto: UpdateTaskStatusDto,
   ) {
-    return this.tasksService.updateTaskStatusById(updatedTaskId, newStatus);
+    return this.tasksService.updateTaskStatusById(
+      updatedTaskId,
+      updateTaskStatusDto.status,
+    );
   }
 }
