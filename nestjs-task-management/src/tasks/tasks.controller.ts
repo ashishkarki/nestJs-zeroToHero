@@ -1,7 +1,5 @@
-import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
-import { TaskStatus } from './task.model';
-import { CreateTaskDto } from './dto/create-task.dto';
+import { UpdateTaskStatusDto } from './dto/update-task-status.dto';
 import { TasksService } from './tasks.service';
 import {
   Body,
@@ -13,36 +11,26 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { Task } from './task.entity';
+import { CreateTaskDto } from './dto/create-task.dto';
 
 @Controller('tasks')
 export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get()
-  getTasks(@Query() filterDto: GetTasksFilterDto) {
-    if (Object.keys(filterDto).length) {
-      // if there are any filters set, then...
-      return this.tasksService.getTaskByFilters(filterDto);
-    } else {
-      return this.tasksService.getAllTasks();
-    }
+  getTasks(@Query() filterDto: GetTasksFilterDto): Promise<Task[]> {
+    return this.tasksService.getTasks(filterDto);
   }
 
-  // http://localhost:3000/tasks/<task-id>
+  // // http://localhost:3000/tasks/<task-id>
   @Get('/:id')
-  getTaskById(@Param('id') taskId: string) {
+  getTaskById(@Param('id') taskId: string): Promise<Task> {
     return this.tasksService.getTaskById(taskId);
   }
 
   @Post()
-  createTask(
-    //   @Body() body
-
-    // @Body('title') title: string,
-    // @Body('description') desc: string,
-
-    @Body() createTaskDto: CreateTaskDto,
-  ) {
+  createTask(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
     return this.tasksService.createTask(createTaskDto);
   }
 
