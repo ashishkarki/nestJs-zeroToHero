@@ -1,3 +1,4 @@
+import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { TaskStatus } from './task-status.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { TasksRepository } from './tasks.repository';
@@ -13,25 +14,9 @@ export class TasksService {
     private tasksRepository: TasksRepository,
   ) {}
 
-  // private tasks: Task[] = [];
-  // getAllTasks = () => {
-  //   return this.tasks;
-  // };
-  // getTaskByFilters = (filterDto: GetTasksFilterDto) => {
-  //   const { status, searchStr } = filterDto;
-  //   let tasks = this.getAllTasks();
-  //   if (status) {
-  //     tasks = tasks.filter((task) => task.status === status);
-  //   }
-  //   if (searchStr) {
-  //     tasks = tasks.filter(
-  //       (task) =>
-  //         task.title.toLocaleLowerCase().includes(searchStr) ||
-  //         task.description.toLocaleLowerCase().includes(searchStr),
-  //     );
-  //   }
-  //   return tasks;
-  // };
+  getTasks = async (filterDto: GetTasksFilterDto): Promise<Task[]> => {
+    return this.tasksRepository.getTasks(filterDto);
+  };
 
   getTaskById = async (taskId: string): Promise<Task> => {
     let foundTask: Task | null = null;
