@@ -10,7 +10,7 @@ export class AuthCredentialsDto {
   @MinLength(2)
   @MaxLength(32)
   @Matches(/(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-    message: 'password length must be between 2 and 32',
+    message: 'invalid password including length must be between 2 and 32',
   })
   password: string;
 }

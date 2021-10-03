@@ -1,0 +1,3 @@
+export enum POSTGRES_CODES {
+  DUPLICATE_COLUMN_ENTRY = '23505',
+}
