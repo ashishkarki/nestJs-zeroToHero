@@ -23,16 +23,19 @@ export class TasksRepository extends Repository<Task> {
     return await this.save(newTask);
   }
 
-  async getTasks(filterDto: GetTasksFilterDto) {
+  async getTasks(filterDto: GetTasksFilterDto, tasksOwnerUser: User) {
     const { status, searchStr } = filterDto;
 
-    const query = this.createQueryBuilder('task');
+    const query = this.createQueryBuilder('task').where({
+      user: tasksOwnerUser, // this 'user' name has to match the property name in task.entity.ts
+    });
+
     if (status) {
       query.andWhere('task.status = :status', { status: status });
     }
     if (searchStr) {
       query.andWhere(
-        'LOWER(task.title) LIKE LOWER(:searchStr) OR LOWER(task.description) LIKE LOWER(:searchStr)',
+        '(LOWER(task.title) LIKE LOWER(:searchStr) OR LOWER(task.description) LIKE LOWER(:searchStr))',
         { searchStr: `%${searchStr}%` },
       );
     }

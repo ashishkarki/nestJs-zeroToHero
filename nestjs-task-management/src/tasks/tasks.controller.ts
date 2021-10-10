@@ -24,14 +24,20 @@ export class TasksController {
   constructor(private tasksService: TasksService) {}
 
   @Get()
-  getTasks(@Query() filterDto: GetTasksFilterDto): Promise<Task[]> {
-    return this.tasksService.getTasks(filterDto);
+  getTasks(
+    @Query() filterDto: GetTasksFilterDto,
+    @GetUser() user: User,
+  ): Promise<Task[]> {
+    return this.tasksService.getTasks(filterDto, user);
   }
 
   // // http://localhost:3000/tasks/<task-id>
   @Get('/:id')
-  getTaskById(@Param('id') taskId: string): Promise<Task> {
-    return this.tasksService.getTaskById(taskId);
+  getTaskById(
+    @Param('id') taskId: string,
+    @GetUser() taskOwnerUser: User,
+  ): Promise<Task> {
+    return this.tasksService.getTaskById(taskId, taskOwnerUser);
   }
 
   @Post()
@@ -44,8 +50,11 @@ export class TasksController {
 
   // http://localhost:3000/tasks/<delete-task-id>
   @Delete('/:id')
-  deleteTaskbyId(@Param('id') deletedTaskId: string) {
-    return this.tasksService.deleteTaskbyId(deletedTaskId);
+  deleteTaskbyId(
+    @Param('id') deletedTaskId: string,
+    @GetUser() taskOwnerUser: User,
+  ) {
+    return this.tasksService.deleteTaskbyId(deletedTaskId, taskOwnerUser);
   }
 
   // http://localhost:3000/tasks/<task-id>/<what-field-is-updated>
@@ -55,10 +64,12 @@ export class TasksController {
     @Param('id') updatedTaskId: string,
     //@Body('status') newStatus: TaskStatus,
     @Body() updateTaskStatusDto: UpdateTaskStatusDto,
+    @GetUser() taskOwnerUser: User,
   ) {
     return this.tasksService.updateTaskStatusById(
       updatedTaskId,
       updateTaskStatusDto.status,
+      taskOwnerUser,
     );
   }
 }

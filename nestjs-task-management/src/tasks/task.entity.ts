@@ -15,6 +15,7 @@ export class Task {
   description: string;
 
   @Column()
+  @Exclude({ toPlainOnly: true })
   status: TaskStatus;
 
   /**

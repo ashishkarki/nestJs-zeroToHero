@@ -15,14 +15,19 @@ export class TasksService {
     private tasksRepository: TasksRepository,
   ) {}
 
-  getTasks = async (filterDto: GetTasksFilterDto): Promise<Task[]> => {
-    return this.tasksRepository.getTasks(filterDto);
+  getTasks = async (
+    filterDto: GetTasksFilterDto,
+    tasksOwnerUser: User,
+  ): Promise<Task[]> => {
+    return this.tasksRepository.getTasks(filterDto, tasksOwnerUser);
   };
 
-  getTaskById = async (taskId: string): Promise<Task> => {
+  getTaskById = async (taskId: string, taskOwnerUser: User): Promise<Task> => {
     let foundTask: Task | null = null;
     try {
-      foundTask = await this.tasksRepository.findOne(taskId);
+      foundTask = await this.tasksRepository.findOne(taskId, {
+        where: { user: taskOwnerUser },
+      });
     } catch (error) {
       console.log(`here was the error..`);
     }
@@ -41,27 +46,34 @@ export class TasksService {
     return this.tasksRepository.createTask(createTaskDto, taskOwnerUser);
   }
 
-  deleteTaskbyId = async (deletedTaskId: string) => {
-    const deleteResult = await this.tasksRepository.delete({
+  deleteTaskbyId = async (deletedTaskId: string, taskOwnerUser: User) => {
+    const deleteResult = this.getTaskById(deletedTaskId, taskOwnerUser);
+
+    await this.tasksRepository.delete({
       id: deletedTaskId,
     });
 
-    this.taskExistanceChecker(deleteResult, deletedTaskId);
+    // this.taskExistanceChecker(deleteResult, deletedTaskId);
 
-    return deleteResult.affected;
+    return deleteResult;
   };
 
   updateTaskStatusById = async (
     updatedTaskId: string,
     newStatus: TaskStatus,
+    taskOwnerUser: User,
   ) => {
-    const updateResult = await this.tasksRepository.update(updatedTaskId, {
-      status: newStatus,
-    });
+    const updateResult = await this.getTaskById(updatedTaskId, taskOwnerUser);
+    // await this.tasksRepository.update(updatedTaskId, {
+    //   status: newStatus,
+    // });
 
-    this.taskExistanceChecker(updateResult, updatedTaskId);
+    // this.taskExistanceChecker(updateResult, updatedTaskId);
 
-    return updateResult.affected;
+    updateResult.status = newStatus;
+    await this.tasksRepository.save(updateResult);
+
+    return updateResult;
   };
 
   taskExistanceChecker = (
