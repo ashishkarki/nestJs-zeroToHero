@@ -22,14 +22,24 @@ export class AuthService {
   signIn = async (
     authCredentialsDto: AuthCredentialsDto,
   ): Promise<JwtSignedToken> => {
-    const { username, password } = authCredentialsDto;
+    // eslint-disable-next-line prettier/prettier
+    const {
+      username: userTypedName,
+      password: userTypedPassword,
+      // eslint-disable-next-line prettier/prettier
+    } = authCredentialsDto;
 
-    // does this user exist ? but give the user any hint
-    const user = await this.userRepo.findOne({ username: username });
+    // does this user exist ? but don't give the user any hint
+    const userObjFromDB = await this.userRepo.findOne({
+      username: userTypedName,
+    });
 
     // compare the input 'password' with stored 'user.password'
-    if (user && (await bcrypt.compare(password, user.password))) {
-      const payload: JwtPayload = { username };
+    if (
+      userObjFromDB &&
+      (await bcrypt.compare(userTypedPassword, userObjFromDB.password))
+    ) {
+      const payload: JwtPayload = { username: userTypedName };
       const accessToken = await this.jwtService.sign(payload);
 
       return { accessToken }; // customary to return this as object

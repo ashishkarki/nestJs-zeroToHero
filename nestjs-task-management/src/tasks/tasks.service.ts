@@ -1,3 +1,4 @@
+import { User } from './../auth/user.entity';
 import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 import { TaskStatus } from './task-status.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -36,8 +37,8 @@ export class TasksService {
     return foundTask;
   };
 
-  createTask(createTaskDto: CreateTaskDto): Promise<Task> {
-    return this.tasksRepository.createTask(createTaskDto);
+  createTask(createTaskDto: CreateTaskDto, taskOwnerUser: User): Promise<Task> {
+    return this.tasksRepository.createTask(createTaskDto, taskOwnerUser);
   }
 
   deleteTaskbyId = async (deletedTaskId: string) => {
