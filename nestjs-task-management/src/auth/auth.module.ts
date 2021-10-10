@@ -15,7 +15,7 @@ import { JwtModule } from '@nestjs/jwt';
       // JwtModule exports a JwtService
       secret: JWT_MODULE_SECRET,
       signOptions: {
-        expiresIn: 3600,
+        expiresIn: 7200, // 7200 secs = 2 hours
       },
     }),
     TypeOrmModule.forFeature([UserRepository]),

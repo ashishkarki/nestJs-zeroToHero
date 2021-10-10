@@ -1,3 +1,4 @@
+import { InternalServerErrorException, Logger } from '@nestjs/common';
 import { User } from './../auth/user.entity';
 import { TaskStatus } from './task-status.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -7,6 +8,8 @@ import { GetTasksFilterDto } from './dto/get-tasks-filter.dto';
 
 @EntityRepository(Task)
 export class TasksRepository extends Repository<Task> {
+  private logger = new Logger('TaskRepository', { timestamp: true });
+
   async createTask(
     createTaskDto: CreateTaskDto,
     taskOwnerUser: User,
@@ -40,8 +43,15 @@ export class TasksRepository extends Repository<Task> {
       );
     }
 
-    const tasks: Task[] = await query.getMany();
-
-    return tasks;
+    try {
+      const tasks: Task[] = await query.getMany();
+      return tasks;
+    } catch (error) {
+      this.logger.error(
+        `Couldn't get tasks for user: ${tasksOwnerUser.username}`,
+        error.stack,
+      );
+      throw new InternalServerErrorException();
+    }
   }
 }
