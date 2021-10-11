@@ -1,3 +1,5 @@
+import { configValidationSchema } from './config.schema';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import {
   POSTGRES_USERNAME,
   POSTGRES_PASSWORD,
@@ -12,16 +14,26 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      envFilePath: [`.env.stage.${process.env.STAGE}`],
+      validationSchema: configValidationSchema,
+    }),
     TasksModule,
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: HOST_NAME,
-      port: POSTGRES_PORT_NUM,
-      username: POSTGRES_USERNAME,
-      password: POSTGRES_PASSWORD,
-      database: POSTGRES_TASKMGMT_DB_NAME,
-      autoLoadEntities: true,
-      synchronize: true,
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => {
+        return {
+          type: 'postgres',
+          autoLoadEntities: true,
+          synchronize: true,
+          host: configService.get('DB_HOST_NAME'),
+          port: configService.get('DB_PORT_NUM'),
+          username: configService.get('DB_USERNAME'),
+          password: configService.get('DB_PASSWORD'),
+          database: configService.get('DB_DATABASE_NAME'),
+        };
+      },
     }),
     AuthModule,
   ],
