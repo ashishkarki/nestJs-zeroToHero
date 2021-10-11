@@ -23,7 +23,13 @@ import { AuthModule } from './auth/auth.module';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => {
+        const isProd = configService.get('STAGE') === 'prod';
         return {
+          ssl: isProd,
+          extra: {
+            ssl: isProd ? { rejectUnauthorized: false } : null,
+          },
+
           type: 'postgres',
           autoLoadEntities: true,
           synchronize: true,

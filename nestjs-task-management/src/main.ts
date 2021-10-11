@@ -16,8 +16,9 @@ async function bootstrap() {
   // interceptor that takes class object and converts it into plain text/json
   app.useGlobalInterceptors(new TransformInterceptor());
 
-  await app.listen(3000);
+  const PORT = process.env.PORT;
+  await app.listen(PORT);
 
-  logger.log(`Application listening on port: 3000`);
+  logger.log(`Application listening on port: ${PORT}`);
 }
 bootstrap();
