@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from './jwt-payload.interface';
 import { JWT_MODULE_SECRET } from './../secrets/jwt-secrets';
 import { UserRepository } from './users.repository';
@@ -13,9 +14,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
     @InjectRepository(UserRepository) private usersRepository: UserRepository,
+    private configService: ConfigService,
   ) {
     super({
-      secretOrKey: JWT_MODULE_SECRET,
+      secretOrKey: configService.get('JWT_MODULE_SECRET'),
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
     });
   }
