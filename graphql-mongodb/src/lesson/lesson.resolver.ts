@@ -1,3 +1,4 @@
+import { CreateLessonInput } from './lesson.input';
 import { LessonService } from './lesson.service';
 import { LessonType } from './lesson.type';
 
@@ -18,12 +19,18 @@ export class LessonResolver {
     return this.lessonSrv.getLesson(id);
   }
 
+  @Query((returns) => [LessonType])
+  lessons() {
+    return this.lessonSrv.getLessons();
+  }
+
   @Mutation((returns) => LessonType)
   createLesson(
-    @Args('name') name: string,
-    @Args('startDate') startDate: string,
-    @Args('endDate') endDate: string,
+    // @Args('name') name: string,
+    // @Args('startDate') startDate: string,
+    // @Args('endDate') endDate: string,
+    @Args('createLessonInput') createLessonInput: CreateLessonInput,
   ) {
-    return this.lessonSrv.createLesson(name, startDate, endDate);
+    return this.lessonSrv.createLesson(createLessonInput);
   }
 }

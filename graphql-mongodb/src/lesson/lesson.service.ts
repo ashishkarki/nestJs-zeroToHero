@@ -1,3 +1,4 @@
+import { CreateLessonInput } from './lesson.input';
 import { LessonEntity } from './lesson.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -11,7 +12,9 @@ export class LessonService {
     private lessonRepo: Repository<LessonEntity>,
   ) {}
 
-  async createLesson(name: string, startDate: string, endDate: string) {
+  async createLesson(createLessonInput: CreateLessonInput) {
+    const { name, startDate, endDate } = createLessonInput;
+
     const nuLesson = this.lessonRepo.create({
       id: uuid(),
       name,
@@ -24,5 +27,9 @@ export class LessonService {
 
   async getLesson(toFindId: string) {
     return await this.lessonRepo.findOne({ id: toFindId });
+  }
+
+  async getLessons() {
+    return await this.lessonRepo.find({});
   }
 }

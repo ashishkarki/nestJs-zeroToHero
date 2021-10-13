@@ -1,5 +1,8 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 
+/**
+ * A GraphQL entity type
+ */
 @ObjectType('Lesson')
 export class LessonType {
   @Field((_type) => ID)
