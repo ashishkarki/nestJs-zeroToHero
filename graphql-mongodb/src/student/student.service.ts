@@ -29,4 +29,15 @@ export class StudentService {
   async getStudents() {
     return await this.studentRepo.find();
   }
+
+  async getManyStudents(studentIds: string[]): Promise<StudentEntity[]> {
+    return this.studentRepo.find({
+      // this block is mongodb syntax
+      where: {
+        id: {
+          $in: studentIds,
+        },
+      },
+    });
+  }
 }
