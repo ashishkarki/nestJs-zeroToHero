@@ -1,3 +1,4 @@
+import { StudentsToLessonInput } from './students-to-lesson.inpu';
 import { CreateLessonInput } from './lesson.input';
 import { LessonService } from './lesson.service';
 import { LessonType } from './lesson.type';
@@ -26,5 +27,13 @@ export class LessonResolver {
     @Args('createLessonInput') createLessonInput: CreateLessonInput,
   ) {
     return this.lessonSrv.createLesson(createLessonInput);
+  }
+
+  @Mutation((_returns) => LessonType)
+  assignStudentsToLesson(
+    @Args('studentsToLessonInput')
+    { lessonId, studentIds }: StudentsToLessonInput,
+  ) {
+    return this.lessonSrv.assignStudentsToLesson(lessonId, studentIds);
   }
 }

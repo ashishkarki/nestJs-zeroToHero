@@ -22,4 +22,7 @@ export class LessonEntity {
 
   @Column()
   endDate: string;
+
+  @Column()
+  students: string[];
 }
